@@ -1,8 +1,5 @@
-asgiref==3.6.0
-Django==3.2.18
-pytz==2022.7.1
-sqlparse==0.4.3
-typing_extensions==4.5.0
-
-python-dotenv~=0.21.1
-djangorestframework~=3.14.0
+Django==3.2.3
+djangorestframework==3.12.4
+djoser==2.1.0
+webcolors==1.11.1
+Pillow==9.0.0
