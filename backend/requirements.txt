@@ -3,3 +3,7 @@ djangorestframework==3.12.4
 djoser==2.1.0
 webcolors==1.11.1
 Pillow==9.0.0
+django-filter==23.1
+python-dotenv==0.21.0
+reportlab==3.6.12
+svglib==1.5.1
