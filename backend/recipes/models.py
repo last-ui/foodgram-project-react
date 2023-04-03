@@ -1,19 +1,19 @@
-from datetime import datetime
-
-# from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
-# from colorfield.fields import ColorField
-from users.models import User
+from django.core import validators
 
-# User = get_user_model()
+from api.validators import webcolors_validate
+
+User = get_user_model()
 
 
 class Tag(models.Model):
-    """Tag model."""
+    """Модель тэгов."""
     name = models.CharField(
         'Название тега',
         max_length=200,
         help_text='Введите название тега',
+        unique=True
     )
     color = models.CharField(
         'Цвет',
@@ -21,6 +21,8 @@ class Tag(models.Model):
         max_length=7,
         null=True,
         help_text='Введите HEX-code цвета',
+        validators=(webcolors_validate,),
+        unique=True
     )
     slug = models.SlugField(
         'Слаг',
@@ -85,11 +87,15 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления',
         help_text='Введите время приготовления',
+        validators=(
+            validators.MinValueValidator(
+                1, message='Время приготовления не может быть меньше 1'),
+        )
     )
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientInRecipe',
-        verbose_name='Ингридиенты',
+        verbose_name='Ингредиенты',
     )
     tags = models.ManyToManyField(
         Tag,
@@ -130,7 +136,12 @@ class IngredientInRecipe(models.Model):
         related_name='ingredient_in_recipe'
     )
     amount = models.PositiveIntegerField(
-        'Количество ингредиента'
+        'Количество ингредиента',
+        validators=(
+            validators.MinValueValidator(
+                1,
+                message="Минимальное количество ингредиента 1"),
+        ),
     )
 
     class Meta:

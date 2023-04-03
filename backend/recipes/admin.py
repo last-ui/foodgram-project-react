@@ -1,37 +1,53 @@
 from django.contrib import admin
-# from import_export import resources
-# from import_export.admin import ImportExportModelAdmin
+from django.utils.html import format_html
 
-from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
+from foodgram_backend import settings
+from recipes.models import Favorite, Ingredient, IngredientInRecipe, Recipe, \
+    ShoppingCart, Tag
 
 
 class IngredientInline(admin.TabularInline):
+    min_num = 1
     model = IngredientInRecipe
-    extra = 3
-
-
-class TagInline(admin.TabularInline):
-    model = Tag
     extra = 3
 
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'cooking_time',)
+    empty_value_display = '-пусто-'
+    list_display = ('name', 'author',)
+    filter_vertical = ('tags',)
     inlines = (
         IngredientInline,
     )
+    list_filter = ('author', 'name', 'tags')
+    search_fields = ('name', 'tags__name', 'tags__slug', 'author__username')
+    list_per_page = settings.LIST_PER_PAGE
 
 
-# class IngredientResource(resources.ModelResource):
-#     class Meta:
-#         model = Ingredient
-#
-#
-# class IngredientAdmin(ImportExportModelAdmin):
-#     resource_class = IngredientResource
+@admin.register(Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
+    empty_value_display = settings.EMPTY_VALUE_DISPLAY
+    list_display = ('name', 'measurement_unit',)
+    search_fields = ('name',)
+    list_per_page = settings.LIST_PER_PAGE
 
 
-# admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(Ingredient)
-admin.site.register(Tag)
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    empty_value_display = settings.EMPTY_VALUE_DISPLAY
+    list_display = ('name', 'color_code', 'slug')
+    fields = ('name', 'color', 'slug')
+    search_fields = ('name', 'slug')
+
+    @admin.display(description='Цвет')
+    def color_code(self, obj):
+        return format_html(
+            '<span style="color: {};">{}</span>',
+            obj.color,
+            obj.color,
+        )
+
+
+admin.site.register(Favorite)
+admin.site.register(ShoppingCart)
