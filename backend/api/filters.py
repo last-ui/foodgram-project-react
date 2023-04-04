@@ -9,16 +9,10 @@ class CustomSearchFilter(filters.SearchFilter):
     """
 
     def filter_queryset(self, request, queryset, view):
-        search_fields = self.get_search_fields(view, request)
-        search_terms = self.get_search_terms(request)
-
-        if not search_fields or not search_terms:
-            return queryset
-        start_queryset = queryset.filter(
-            name__istartswith=search_terms[0])
-        cont_queryset = queryset.filter(name__icontains=search_terms[0])
-        cont_queryset = list(cont_queryset.exclude(pk__in=set(
-            start_queryset.values_list('pk', flat=True))))
-        queryset = list(start_queryset)
-        queryset.extend(cont_queryset)
-        return queryset
+        name = request.query_params.get('name')
+        start_queryset = list(queryset.filter(name__istartswith=name))
+        add_queryset = queryset.filter(name__icontains=name)
+        start_queryset.extend(
+            [item for item in add_queryset if item not in start_queryset]
+        )
+        return start_queryset

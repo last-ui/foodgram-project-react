@@ -15,7 +15,7 @@ class IngredientInline(admin.TabularInline):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
-    list_display = ('name', 'author',)
+    list_display = ('name', 'author', 'add_to_favorite')
     filter_vertical = ('tags',)
     inlines = (
         IngredientInline,
@@ -23,6 +23,10 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('author', 'name', 'tags')
     search_fields = ('name', 'tags__name', 'tags__slug', 'author__username')
     list_per_page = settings.LIST_PER_PAGE
+
+    @admin.display(description='Добавлено в избранное')
+    def add_to_favorite(self, obj):
+        return obj.favorite.count()
 
 
 @admin.register(Ingredient)
