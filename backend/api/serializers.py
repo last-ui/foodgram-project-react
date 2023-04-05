@@ -242,6 +242,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShoppingCart
+        fields = ('recipe', 'user')
 
     def validate(self, attrs):
         recipe = attrs.get('recipe')
@@ -268,6 +269,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 class SubscribeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscribe
+        fields = ('author', 'user')
 
     def validate(self, attrs):
         author = attrs.get('author')

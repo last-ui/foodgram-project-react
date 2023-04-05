@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.core import validators
 
-from validators import webcolors_validate
+from recipes.validators import webcolors_validate
 
 User = get_user_model()
 
