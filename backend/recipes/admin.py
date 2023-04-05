@@ -1,9 +1,10 @@
+from django.conf import settings
 from django.contrib import admin
+from django.db.models import Count
 from django.utils.html import format_html
 
-from foodgram_backend import settings
-from recipes.models import Favorite, Ingredient, IngredientInRecipe, Recipe, \
-    ShoppingCart, Tag
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
 
 
 class IngredientInline(admin.TabularInline):
@@ -24,9 +25,18 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('name', 'tags__name', 'tags__slug', 'author__username')
     list_per_page = settings.LIST_PER_PAGE
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.annotate(
+            favorite_count=Count('favorite')
+        )
+        return queryset
+
     @admin.display(description='Добавлено в избранное')
     def add_to_favorite(self, obj):
         return obj.favorite.count()
+
+    add_to_favorite.admin_order_field = 'favorite_count'
 
 
 @admin.register(Ingredient)

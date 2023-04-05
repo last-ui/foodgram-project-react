@@ -1,9 +1,14 @@
+from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
+from users.models import Subscribe
 from users.serializers import UserSerializer
+
+User = get_user_model()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -13,6 +18,22 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('id', 'name', 'color', 'slug',)
         read_only_fields = ('id', 'name', 'color', 'slug',)
+
+
+class IngredientsInRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор ингредиентов в рецепте."""
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(),
+        source='ingredient',
+    )
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit'
+    )
+
+    class Meta:
+        model = IngredientInRecipe
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -74,7 +95,7 @@ class RecipeShortSerializer(RecipeSerializer):
 
 class UserSubscribeSerializer(UserSerializer):
     """Сериализатор подписок пользователя."""
-    recipes = RecipeShortSerializer(many=True, read_only=True)
+    recipes = RecipeShortSerializer(many=True)
     recipes_count = serializers.SerializerMethodField()
 
     def get_queryset(self, obj):
@@ -105,34 +126,17 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = '__all__'
-        read_only_fields = ('__all__',)
-
-
-class IngredientsInRecipeSerializer(serializers.ModelSerializer):
-    """Сериализатор ингредиентов в рецепте."""
-    id = serializers.PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.all(),
-        source='ingredient',
-    )
-    name = serializers.ReadOnlyField(source='ingredient.name')
-    measurement_unit = serializers.ReadOnlyField(
-        source='ingredient.measurement_unit'
-    )
-
-    class Meta:
-        model = IngredientInRecipe
-        fields = ('id', 'name', 'measurement_unit', 'amount')
+        fields = ('id', 'name', 'measurement_unit',)
+        read_only_fields = ('id', 'name', 'measurement_unit',)
 
 
 class RecipeSerializerCreate(RecipeSerializer):
     """Сериализатор создания и редактирования рецепта."""
     ingredients = IngredientsInRecipeSerializer(many=True)
-    tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
-                                              many=True)
-    image = Base64ImageField(required=False, allow_null=True)
-    author = UserSerializer(read_only=True,
-                            default=serializers.CurrentUserDefault())
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True
+    )
 
     def ingredient_in_recipe_create(self, recipe, ingredients):
         """Метод добавления ингредиентов рецепта в базу данных."""
@@ -209,3 +213,82 @@ class RecipeSerializerCreate(RecipeSerializer):
                 message='Рецепт с таким названием уже создан!'
             )
         ]
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Favorite
+        fields = ('recipe', 'user')
+
+    def validate(self, attrs):
+        recipe = attrs.get('recipe')
+        method = self.context.get('method')
+        current_user = attrs.get('user')
+        if (method == 'POST' and recipe.favorite.filter(
+                user=current_user).exists()):
+            raise serializers.ValidationError(
+                {'errors': 'Рецепт уже в избранном!'}
+            )
+        elif (method == 'DELETE' and
+                not recipe.favorite.filter(user=current_user).exists()):
+            raise serializers.ValidationError(
+                {'errors': 'Рецепта нет в избранном!'}
+            )
+        return attrs
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ShoppingCart
+
+    def validate(self, attrs):
+        recipe = attrs.get('recipe')
+        method = self.context.get('method')
+        current_user = attrs.get('user')
+        if (method == 'POST' and recipe.shopping_cart.filter(
+                user=current_user).exists()):
+            raise serializers.ValidationError(
+                {'errors': 'Рецепт уже в корзине!'}
+            )
+        elif (method == 'DELETE' and
+                not recipe.shopping_cart.filter(user=current_user).exists()):
+            raise serializers.ValidationError(
+                {'errors': 'Рецепта нет в корзине!'}
+            )
+        elif (method == 'GET' and
+                not current_user.shopping_cart.exists()):
+            raise serializers.ValidationError(
+                {'errors': 'Корзина пуста!'}
+            )
+        return attrs
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscribe
+
+    def validate(self, attrs):
+        author = attrs.get('author')
+        method = self.context.get('method')
+        current_user = attrs.get('user')
+        if method == 'POST':
+            if author == current_user:
+                raise serializers.ValidationError(
+                    {'errors': 'Подписка на самого себя не возможна!'}
+                )
+            if current_user.subscriber.filter(author=author).exists():
+                raise serializers.ValidationError(
+                    {'errors': 'Повторная подписка!'}
+                )
+        elif method == 'DELETE':
+            if author == current_user:
+                raise serializers.ValidationError(
+                    {'errors': 'Отписаться от самого себя невозможно!'}
+                )
+            if not current_user.subscriber.filter(author=author).exists():
+                raise serializers.ValidationError(
+                    {'errors': 'Подписка на автора отсутствует!'}
+                )
+        return attrs

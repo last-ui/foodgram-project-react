@@ -3,19 +3,19 @@ import os
 import sys
 
 from django.apps import apps
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.transaction import atomic
-
-from foodgram_backend import settings
 
 
 class Command(BaseCommand):
     """
-    Команда для извлеения данных из csv.
-    Запуск python manage.py command --filename <имя сsv файла> --app
-    <название app> --model <название модели>.
+    Команда для извлечения данных из csv.
+    Запуск:
+    python manage.py loadcsv --filename ingredients --app recipe
+     --model ingredient.
     """
-    help = 'Создает Данные из csv, параметр название файла'
+    help = 'Создает данные из csv'
 
     def add_arguments(self, parser):
         parser.add_argument('--filename', type=str, help='filename')

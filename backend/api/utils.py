@@ -1,5 +1,6 @@
 import os
 
+from django.conf import settings
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch
@@ -7,8 +8,6 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-
-from foodgram_backend import settings
 
 SIZE_FONT = 18
 HEADER_TEXT = 'Foodgram - список покупок'
@@ -56,17 +55,16 @@ def download_pdf_file(annotated_results):
     )
     y_cord = y_cord_start - SIZE_FONT * 2
     pdf.setFont(FONT_NAME, SIZE_FONT * 0.8)
-    for i in range(10):
-        for num, item in enumerate(annotated_results, start=1):
-            pdf.drawString(
-                x_cord, y_cord,
-                f'{num}. {item}: {item.sum_ingredients}'
-                f' {item.measurement_unit}'
-            )
-            y_cord -= SIZE_FONT * 1.1
-            if y_cord <= y_cord_start * 0.05:
-                pdf.showPage()
-                y_cord = y_cord_start
-                pdf.setFont(FONT_NAME, SIZE_FONT)
+    for num, item in enumerate(annotated_results, start=1):
+        pdf.drawString(
+            x_cord, y_cord,
+            f'{num}. {item}: {item.sum_ingredients}'
+            f' {item.measurement_unit}'
+        )
+        y_cord -= SIZE_FONT * 1.1
+        if y_cord <= y_cord_start * 0.05:
+            pdf.showPage()
+            y_cord = y_cord_start
+            pdf.setFont(FONT_NAME, SIZE_FONT)
     pdf.save()
     return response

@@ -1,4 +1,7 @@
 from rest_framework import filters
+from django.db.models import Value, IntegerField
+
+# from models import Ingredient
 
 
 class CustomSearchFilter(filters.SearchFilter):
@@ -10,9 +13,14 @@ class CustomSearchFilter(filters.SearchFilter):
 
     def filter_queryset(self, request, queryset, view):
         name = request.query_params.get('name')
-        start_queryset = list(queryset.filter(name__istartswith=name))
-        add_queryset = queryset.filter(name__icontains=name)
-        start_queryset.extend(
-            [item for item in add_queryset if item not in start_queryset]
+        start_queryset = queryset.annotate(
+            rank=Value(1, IntegerField())
+        ).filter(name__istartswith=name)
+        add_queryset = queryset.annotate(
+            rank=Value(2, IntegerField())
+        ).filter(name__icontains=name)
+        add_queryset = add_queryset.exclude(
+            pk__in=[query.pk for query in start_queryset]
         )
-        return start_queryset
+        queryset = start_queryset.union(add_queryset).order_by('rank')
+        return queryset

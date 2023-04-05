@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.core import validators
 
-from api.validators import webcolors_validate
+from validators import webcolors_validate
 
 User = get_user_model()
 
@@ -17,9 +17,7 @@ class Tag(models.Model):
     )
     color = models.CharField(
         'Цвет',
-        default='#FF0000',
         max_length=7,
-        null=True,
         help_text='Введите HEX-code цвета',
         validators=(webcolors_validate,),
         unique=True
@@ -28,7 +26,6 @@ class Tag(models.Model):
         'Слаг',
         max_length=200,
         unique=True,
-        null=True,
         help_text='Введите слаг тега',
     )
 
@@ -73,8 +70,6 @@ class Recipe(models.Model):
     image = models.ImageField(
         'Изображение',
         upload_to='media/',
-        null=True,
-        default=None
     )
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
@@ -105,7 +100,6 @@ class Recipe(models.Model):
     pub_date = models.DateTimeField(
         'Дата публикации',
         auto_now_add=True,
-        blank=True
     )
 
     class Meta:
@@ -114,7 +108,7 @@ class Recipe(models.Model):
         verbose_name_plural = 'Рецепты'
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "author"], name="unique_recipe",
+                fields=['name', 'author'], name='unique_recipe',
             ),
         ]
 
@@ -140,7 +134,7 @@ class IngredientInRecipe(models.Model):
         validators=(
             validators.MinValueValidator(
                 1,
-                message="Минимальное количество ингредиента 1"),
+                message='Минимальное количество ингредиента 1'),
         ),
     )
 
@@ -149,7 +143,7 @@ class IngredientInRecipe(models.Model):
         verbose_name_plural = 'Ингредиенты в рецепте'
 
     def __str__(self):
-        return f'{self.ingredient} - {self.recipe}'
+        return f'{self.ingredient_id} - {self.recipe_id}'
 
 
 class Favorite(models.Model):
@@ -171,7 +165,7 @@ class Favorite(models.Model):
         verbose_name_plural = 'Избранные рецепты'
 
     def __str__(self):
-        return f'{self.user} - {self.recipe}'
+        return f'{self.user_id} - {self.recipe_id}'
 
 
 class ShoppingCart(models.Model):
@@ -193,4 +187,4 @@ class ShoppingCart(models.Model):
         verbose_name_plural = 'Список покупок'
 
     def __str__(self):
-        return f'{self.user} - {self.recipe}'
+        return f'{self.user_id} - {self.recipe_id}'

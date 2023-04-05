@@ -10,25 +10,33 @@ load_dotenv(ENV_PATH)
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='secretkey')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG', default='True')
 
 ALLOWED_HOSTS = ['*']
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'djoser',
+DJANGO_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+    ]
 
-    'api',
-    'recipes',
-    'users',
-]
+THIRD_PARTY_APPS = [
+        'djoser',
+        'rest_framework',
+        'rest_framework.authtoken',
+    ]
+
+LOCAL_APPS = [
+        'api',
+        'recipes',
+        'users',
+    ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
