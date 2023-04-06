@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 
-from api.filters import CustomSearchFilter
+from api.filters import CustomSearchFilter, RecipeFilter
 from api.pagination import LimitPageNumberPagination
 from api.permissions import IsOwnerOrReadOnly
 from api.serializers import (FavoriteSerializer, IngredientSerializer,
@@ -10,6 +10,7 @@ from api.serializers import (FavoriteSerializer, IngredientSerializer,
                              RecipeShortSerializer, ShoppingCartSerializer,
                              TagSerializer, UserSubscribeSerializer)
 from api.utils import download_pdf_file
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from rest_framework import status, viewsets
@@ -41,27 +42,8 @@ class RecipesViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = LimitPageNumberPagination
     permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
-
-    def get_queryset(self):
-        """Метод получения queryset при фильтрации по параметрам запроса."""
-        queryset = self.queryset
-        tags = self.request.query_params.getlist('tags')
-        if tags:
-            queryset = queryset.filter(tags__slug__in=tags).distinct()
-        author = self.request.query_params.get('author')
-        if author:
-            queryset = queryset.filter(author_id=author)
-        is_in_shopping_cart = self.request.query_params.get(
-            'is_in_shopping_cart'
-        )
-        if is_in_shopping_cart and is_in_shopping_cart == '1':
-            queryset = queryset.filter(shopping_cart__user=self.request.user)
-        is_favorited = self.request.query_params.get(
-            'is_favorited'
-        )
-        if is_favorited and is_favorited == '1':
-            return queryset.filter(favorite__user=self.request.user)
-        return queryset
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
