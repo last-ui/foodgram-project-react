@@ -9,6 +9,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         """Пользователь не может редактировать чужой пост."""
         return (
-                request.method in SAFE_METHODS or obj.author == request.user
-                or request.user.is_staff
+            request.method in SAFE_METHODS
+            or obj.author == request.user
+            or request.user.is_staff
         )
