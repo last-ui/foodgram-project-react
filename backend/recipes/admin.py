@@ -27,10 +27,9 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        queryset = queryset.annotate(
+        return queryset.annotate(
             favorite_count=Count('favorite')
         )
-        return queryset
 
     @admin.display(description='Добавлено в избранное')
     def add_to_favorite(self, obj):

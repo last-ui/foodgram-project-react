@@ -60,7 +60,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
             'is_favorited'
         )
         if is_favorited and is_favorited == '1':
-            queryset = queryset.filter(favorite__user=self.request.user)
+            return queryset.filter(favorite__user=self.request.user)
         return queryset
 
     def perform_create(self, serializer):
@@ -88,10 +88,9 @@ class RecipesViewSet(viewsets.ModelViewSet):
             Favorite.objects.create(recipe=recipe, user=self.request.user)
             serializer = RecipeShortSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        elif self.request.method == 'DELETE':
-            favorite = recipe.favorite.filter(user=self.request.user)
-            favorite.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        favorite = recipe.favorite.filter(user=self.request.user)
+        favorite.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True,
             permission_classes=(IsAuthenticated,),
@@ -110,10 +109,9 @@ class RecipesViewSet(viewsets.ModelViewSet):
             serializer = RecipeShortSerializer(recipe)
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
-        elif self.request.method == 'DELETE':
-            shopping_cart = recipe.shopping_cart.filter(user=self.request.user)
-            shopping_cart.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        shopping_cart = recipe.shopping_cart.filter(user=self.request.user)
+        shopping_cart.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False,
             permission_classes=(IsAuthenticated,),
@@ -159,10 +157,9 @@ class MyUsersViewSet(UserViewSet):
             )
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
-        if request.method == 'DELETE':
-            subscribe = current_user.subscriber.filter(author=author)
-            subscribe.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        subscribe = current_user.subscriber.filter(author=author)
+        subscribe.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False,
             permission_classes=(IsAuthenticated,),

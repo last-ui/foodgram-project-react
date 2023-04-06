@@ -23,5 +23,4 @@ class CustomSearchFilter(filters.SearchFilter):
         add_queryset = add_queryset.exclude(
             pk__in=[query.pk for query in start_queryset]
         )
-        queryset = start_queryset.union(add_queryset).order_by('rank')
-        return queryset
+        return start_queryset.union(add_queryset).order_by('rank')

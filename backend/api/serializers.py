@@ -229,16 +229,16 @@ class FavoriteSerializer(serializers.ModelSerializer):
         recipe = attrs.get('recipe')
         method = self.context.get('method')
         current_user = attrs.get('user')
-        if (method == 'POST'
-                and recipe.favorite.filter(user=current_user).exists()):
-            raise serializers.ValidationError(
-                {'errors': 'Рецепт уже в избранном!'}
-            )
-        elif (method == 'DELETE'
-                and not recipe.favorite.filter(user=current_user).exists()):
-            raise serializers.ValidationError(
-                {'errors': 'Рецепта нет в избранном!'}
-            )
+        if method == 'POST':
+            if recipe.favorite.filter(user=current_user).exists():
+                raise serializers.ValidationError(
+                    {'errors': 'Рецепт уже в избранном!'}
+                )
+        elif method == 'DELETE':
+            if not recipe.favorite.filter(user=current_user).exists():
+                raise serializers.ValidationError(
+                    {'errors': 'Рецепта нет в избранном!'}
+                )
         return attrs
 
 
@@ -252,22 +252,21 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         recipe = attrs.get('recipe')
         method = self.context.get('method')
         current_user = attrs.get('user')
-        if (method == 'POST'
-                and recipe.shopping_cart.filter(user=current_user).exists()):
-            raise serializers.ValidationError(
-                {'errors': 'Рецепт уже в корзине!'}
-            )
-        elif (method == 'DELETE'
-                and not recipe.shopping_cart.filter(
-                    user=current_user).exists()):
-            raise serializers.ValidationError(
-                {'errors': 'Рецепта нет в корзине!'}
-            )
-        elif (method == 'GET'
-                and not current_user.shopping_cart.exists()):
-            raise serializers.ValidationError(
-                {'errors': 'Корзина пуста!'}
-            )
+        if method == 'POST':
+            if recipe.shopping_cart.filter(user=current_user).exists():
+                raise serializers.ValidationError(
+                    {'errors': 'Рецепт уже в корзине!'}
+                )
+        elif method == 'DELETE':
+            if not recipe.shopping_cart.filter(user=current_user).exists():
+                raise serializers.ValidationError(
+                    {'errors': 'Рецепта нет в корзине!'}
+                )
+        elif method == 'GET':
+            if not current_user.shopping_cart.exists():
+                raise serializers.ValidationError(
+                    {'errors': 'Корзина пуста!'}
+                )
         return attrs
 
 

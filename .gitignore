@@ -130,9 +130,3 @@ dmypy.json
 
 # .idea
 .idea
-
-# isort
-.isort
-
-#pre-commit
-.pre-commit-config

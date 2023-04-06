@@ -26,6 +26,6 @@ repos:
       types: [python]
       args: [
         "--ignore=W503",
-        "--max-line-length=110",
+        "--max-line-length=79",
         "--per-file-ignores=*/settings.py:E501"
       ]
