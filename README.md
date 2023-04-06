@@ -17,7 +17,7 @@ https://github.com/last-ui
 
 <h2>Подготовка проекта к запуску</h2>
 
-Заполнить .env-файл в разделе /infra/, вариант заполнения указан 
+Заполнить .env-файл в разделе /infra/, вариант заполнения указан
 example.env.
 
 
@@ -33,7 +33,7 @@ docker-compose up
 docker-compose up -d --build
 ```
 
-**2. В контейнере web выполнить миграции, создать суперпользователя и 
+**2. В контейнере web выполнить миграции, создать суперпользователя и
 собрать статику:**
 ```shell
 docker-compose exec web python manage.py migrate

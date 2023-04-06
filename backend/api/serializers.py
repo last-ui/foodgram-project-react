@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
-from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
+from drf_extra_fields.fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
+from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from users.models import Subscribe
 from users.serializers import UserSerializer
 
@@ -55,8 +55,10 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, obj):
         """Метод определения избранных рецептов текущего пользователя."""
         current_user = self.context['request'].user
-        return (not current_user.is_anonymous and
-                obj.favorite.filter(user=current_user).exists())
+        return (
+            not current_user.is_anonymous
+            and obj.favorite.filter(user=current_user).exists()
+        )
 
     def get_is_in_shopping_cart(self, obj):
         """
@@ -64,8 +66,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         пользователя.
         """
         current_user = self.context['request'].user
-        return (not current_user.is_anonymous and
-                obj.shopping_cart.filter(user=current_user).exists())
+        return (
+            not current_user.is_anonymous
+            and obj.shopping_cart.filter(user=current_user).exists()
+        )
 
     class Meta:
         model = Recipe
@@ -225,13 +229,13 @@ class FavoriteSerializer(serializers.ModelSerializer):
         recipe = attrs.get('recipe')
         method = self.context.get('method')
         current_user = attrs.get('user')
-        if (method == 'POST' and recipe.favorite.filter(
-                user=current_user).exists()):
+        if (method == 'POST'
+                and recipe.favorite.filter(user=current_user).exists()):
             raise serializers.ValidationError(
                 {'errors': 'Рецепт уже в избранном!'}
             )
-        elif (method == 'DELETE' and
-                not recipe.favorite.filter(user=current_user).exists()):
+        elif (method == 'DELETE'
+                and not recipe.favorite.filter(user=current_user).exists()):
             raise serializers.ValidationError(
                 {'errors': 'Рецепта нет в избранном!'}
             )
@@ -248,18 +252,19 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         recipe = attrs.get('recipe')
         method = self.context.get('method')
         current_user = attrs.get('user')
-        if (method == 'POST' and recipe.shopping_cart.filter(
-                user=current_user).exists()):
+        if (method == 'POST'
+                and recipe.shopping_cart.filter(user=current_user).exists()):
             raise serializers.ValidationError(
                 {'errors': 'Рецепт уже в корзине!'}
             )
-        elif (method == 'DELETE' and
-                not recipe.shopping_cart.filter(user=current_user).exists()):
+        elif (method == 'DELETE'
+                and not recipe.shopping_cart.filter(
+                    user=current_user).exists()):
             raise serializers.ValidationError(
                 {'errors': 'Рецепта нет в корзине!'}
             )
-        elif (method == 'GET' and
-                not current_user.shopping_cart.exists()):
+        elif (method == 'GET'
+                and not current_user.shopping_cart.exists()):
             raise serializers.ValidationError(
                 {'errors': 'Корзина пуста!'}
             )

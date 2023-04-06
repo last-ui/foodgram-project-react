@@ -2,6 +2,7 @@ import os
 
 from django.conf import settings
 from django.http import HttpResponse
+
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics

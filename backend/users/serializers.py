@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
-from djoser.serializers import (
+
+from djoser.serializers import \
     UserCreateSerializer as BaseUserRegistrationSerializer
-)
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -51,5 +51,7 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         """Метод определяет подписан ли текущий пользователь на автора."""
         user = self.context['request'].user
-        return (not user.is_anonymous and
-                obj.subscribed.filter(user=user).exists())
+        return (
+            not user.is_anonymous
+            and obj.subscribed.filter(user=user).exists()
+        )
