@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 
-from djoser.serializers import \
-    UserCreateSerializer as BaseUserRegistrationSerializer
+from djoser.serializers import (
+    UserCreateSerializer as BaseUserRegistrationSerializer)
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
