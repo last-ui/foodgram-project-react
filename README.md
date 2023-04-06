@@ -1,6 +1,7 @@
 **[Server address](http://51.250.67.63/)**
 
-![workflow](https://github.com/last-ui/yamdb_final/actions/workflows/yamdb_workflow.yml/badge.svg)
+![workflow](https://github.com/last-ui/foodgram-project-react/actions
+/workflows/foodgram_workflow.yml/badge.svg)
 
 <h1 align="center"> Проект: сайт Foodgram, «Продуктовый помощник» </h1>
 
