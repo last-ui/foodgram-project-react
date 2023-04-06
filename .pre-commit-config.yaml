@@ -16,16 +16,6 @@ repos:
   hooks:
     - id: isort
 
-- repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.261
-  hooks:
-    - id: ruff
-      args: [
-        "--ignore=W503",
-        "--max-line-length=79",
-        "--per-file-ignores=*/settings.py:E501"
-      ]
-
 - repo: local
 
   hooks:
