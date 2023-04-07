@@ -30,6 +30,10 @@ class UserRegistrationSerializer(BaseUserRegistrationSerializer):
             )
         )
     )
+    password = serializers.CharField(
+        max_length=150, write_only=True
+    )
+
     """Сериализатор регистрации пользователя."""
     class Meta(BaseUserRegistrationSerializer.Meta):
         fields = ('id', 'email', 'username', 'first_name', 'last_name',
