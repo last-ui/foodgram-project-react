@@ -2,9 +2,16 @@
 
 **[Server address](http://51.250.67.63/)**
 
-login: fake_mail@mail.ru
+Данные для доступа в админ-панель:
+
+email: fake_mail@mail.ru
+
 password: haJpF4QBBw
 
+# Документация Swagger
+
+Для просмотра документации к API перейдите по адресу:
+**[http://51.250.67.63/swagger/](http://51.250.67.63/swagger/)**
 
 
 <h1 align="center"> Проект: сайт Foodgram, «Продуктовый помощник» </h1>
@@ -41,20 +48,20 @@ docker-compose up
 docker-compose up -d --build
 ```
 
-**2. В контейнере web выполнить миграции, создать суперпользователя и
+**2. В контейнере backend выполнить миграции, создать суперпользователя и
 собрать статику:**
 ```shell
-docker-compose exec web python manage.py migrate
+docker-compose exec backend python manage.py migrate
 
-docker-compose exec web python manage.py createsuperuser
+docker-compose exec backend python manage.py createsuperuser
 
-docker-compose exec web python manage.py collectstatic --no-input
+docker-compose exec backend python manage.py collectstatic --no-input
 ```
 
 **3. Для наполнения базы данных из файла дампа fixtures.json:**
 
 ```shell
-docker-compose exec web python manage.py loaddata fixtures.json
+docker-compose exec backend python manage.py loaddata fixtures.json
 ```
 
 
@@ -62,17 +69,16 @@ docker-compose exec web python manage.py loaddata fixtures.json
 
 Для того чтобы получить, описанные понятным языком эндпоинты и настройки, да ещё с примерами запросов, да ещё с образцами ответов! Читай ReDoc, документация в этом формате доступна по ссылке:
 
-http://127.0.0.1/api/docs/
+http://host_adress/swagger/
 
 
 <h2>Используемые технологии</h2>
 
-Django==3.2.3
-djangorestframework==3.12.4
-djoser==2.1.0
-webcolors==1.11.1
-Pillow==9.0.0
-python-dotenv==0.21.0
-reportlab==3.6.12
-psycopg2-binary==2.8.6
-gunicorn==20.0.4
+- [Python 3.7](https://www.python.org/downloads/release/python-37/)
+- [Django 3.2.3](https://www.djangoproject.com/download/)
+- [Django Rest Framework 3.12.4](https://www.django-rest-framework.org/)
+- [PostgreSQL 13.0](https://www.postgresql.org/download/)
+- [gunicorn 20.0.4](https://pypi.org/project/gunicorn/)
+- [nginx 1.19.3](https://nginx.org/ru/download.html)
+- [Docker 20.10.14](https://www.docker.com/)
+- [Docker Compose 2.4.1](https://docs.docker.com/compose/)
