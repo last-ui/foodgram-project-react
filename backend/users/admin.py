@@ -23,16 +23,18 @@ class CustomUserAdmin(UserAdmin):
         (None, {
             'classes': ('wide',),
             'fields': (
-                ('is_active',),
-                ('username', 'email', 'password1',),
+                ('is_active', 'is_staff',),
+                ('username', 'email',),
+                ('password1', 'password2',),
                 ('first_name', 'last_name',),)
         }),
     )
     list_display = (
         'username', 'first_name', 'last_name', 'email', 'is_active',
+        'is_staff',
     )
     fields = (
-        ('is_active',),
+        ('is_active', 'is_staff',),
         ('username', 'email', 'password',),
         ('first_name', 'last_name',),
     )
