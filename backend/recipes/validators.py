@@ -1,6 +1,5 @@
-from django.core.exceptions import ValidationError
-
 import webcolors
+from django.core.exceptions import ValidationError
 
 
 def webcolors_validate(data):

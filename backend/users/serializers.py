@@ -1,15 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
-
-from djoser.serializers import (
-    UserCreateSerializer as BaseUserRegistrationSerializer)
+from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 User = get_user_model()
 
 
-class UserRegistrationSerializer(BaseUserRegistrationSerializer):
+class UserRegistrationSerializer(UserCreateSerializer):
     email = serializers.EmailField(
         max_length=254,
         required=True,
@@ -35,7 +33,7 @@ class UserRegistrationSerializer(BaseUserRegistrationSerializer):
     )
 
     """Сериализатор регистрации пользователя."""
-    class Meta(BaseUserRegistrationSerializer.Meta):
+    class Meta(UserCreateSerializer.Meta):
         fields = ('id', 'email', 'username', 'first_name', 'last_name',
                   'password',)
         read_only_fields = ('id',)
