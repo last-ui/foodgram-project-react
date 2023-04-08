@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.db.models import IntegerField, Value
-
 from django_filters import rest_framework as django_filters
-from recipes.models import Recipe, Tag
 from rest_framework import filters
+
+from recipes.models import Recipe, Tag
 
 User = get_user_model()
 
@@ -42,9 +42,7 @@ class RecipeFilter(django_filters.FilterSet):
         queryset=Tag.objects.all(),
     )
     author = django_filters.ModelChoiceFilter(queryset=User.objects.all())
-    is_favorited = django_filters.ChoiceFilter(
-        choices=STATUS_CHOICES, method='get_queryset'
-    )
+    is_favorited = django_filters.BooleanFilter()
     is_in_shopping_cart = django_filters.ChoiceFilter(
         choices=STATUS_CHOICES, method='get_queryset'
     )
