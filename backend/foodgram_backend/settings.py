@@ -157,3 +157,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 EMPTY_VALUE_DISPLAY = '-пусто-'
 
 LIST_PER_PAGE = 20
+
+RECIPES_LIMIT = 6

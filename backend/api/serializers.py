@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
@@ -111,7 +112,7 @@ class UserSubscribeSerializer(UserSerializer):
         limit = self.context['request'].query_params.get('recipes_limit')
         if limit:
             return obj.recipes.all()[:int(limit)]
-        return obj.recipes.all()
+        return obj.recipes.all()[:settings.RECIPES_LIMIT]
 
     def get_recipes_count(self, obj):
         """

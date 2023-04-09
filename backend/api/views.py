@@ -3,13 +3,13 @@ from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from api.filters import CustomSearchFilter, RecipeFilter
+from api.filters import RecipeFilter
 from api.pagination import LimitPageNumberPagination
 from api.permissions import IsOwnerOrReadOnly
 from api.serializers import (FavoriteSerializer, IngredientSerializer,
@@ -33,7 +33,8 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет ингредиентов."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (CustomSearchFilter,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
@@ -65,14 +66,15 @@ class RecipesViewSet(viewsets.ModelViewSet):
             data={'recipe': pk, 'user': current_user.id},
             context={'method': self.request.method}
         )
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         if self.request.method == 'POST':
             Favorite.objects.create(recipe=recipe, user=self.request.user)
             serializer = RecipeShortSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        favorite = recipe.favorite.filter(user=self.request.user)
-        favorite.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        elif self.request.method == 'DELETE':
+            favorite = recipe.favorite.filter(user=self.request.user)
+            favorite.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True,
             permission_classes=(IsAuthenticated,),
@@ -85,15 +87,16 @@ class RecipesViewSet(viewsets.ModelViewSet):
             data={'recipe': pk, 'user': current_user.id},
             context={'method': self.request.method}
         )
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         if self.request.method == 'POST':
             ShoppingCart.objects.create(recipe=recipe, user=self.request.user)
             serializer = RecipeShortSerializer(recipe)
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
-        shopping_cart = recipe.shopping_cart.filter(user=self.request.user)
-        shopping_cart.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        elif self.request.method == 'DELETE':
+            shopping_cart = recipe.shopping_cart.filter(user=self.request.user)
+            shopping_cart.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False,
             permission_classes=(IsAuthenticated,),
