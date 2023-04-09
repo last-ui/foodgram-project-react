@@ -1,4 +1,4 @@
-exclude: (tests|migrations|frontend|venv|env)/.*
+exclude: (tests|migrations|venv|env)/.*
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.5.0
@@ -6,6 +6,17 @@ repos:
     - id: check-yaml
     - id: end-of-file-fixer
     - id: trailing-whitespace
+
+- repo: https://github.com/asottile/seed-isort-config
+  rev: v2.2.0
+  hooks:
+    - id: seed-isort-config
+      args: ["--application-directories=api,recipes,users"]
+
+- repo: https://github.com/timothycrosley/isort
+  rev: 4.3.21
+  hooks:
+    - id: isort
 
 - repo: local
 
