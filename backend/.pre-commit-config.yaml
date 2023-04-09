@@ -16,7 +16,7 @@ repos:
       language: system
       types: [python]
       args: [
-        "--ignore=W503",
+        "--ignore=W503,R505",
         "--max-line-length=79",
         "--per-file-ignores=*/settings.py:E501"
       ]
