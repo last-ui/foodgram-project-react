@@ -1,4 +1,4 @@
-exclude: (tests|migrations|venv|env)/.*
+exclude: (tests|migrations|frontend|venv|env)/.*
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.5.0
