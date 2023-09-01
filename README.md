@@ -1,19 +1,5 @@
 ![workflow](https://github.com/last-ui/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
-**[Server address](http://51.250.67.63/)**
-
-Данные для доступа в админ-панель:
-
-email: fake_mail@mail.ru
-
-password: haJpF4QBBw
-
-# Документация Swagger
-
-Для просмотра документации к API перейдите по адресу:
-**[http://51.250.67.63/swagger/](http://51.250.67.63/swagger/)**
-
-
 <h1 align="center"> Проект: сайт Foodgram, «Продуктовый помощник» </h1>
 
 ___
